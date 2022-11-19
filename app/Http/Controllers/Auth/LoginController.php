@@ -37,41 +37,39 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
-
     public function index()
     {
         if ($user = Auth::user()) {
             if ($user->level == 'admin');
-                return redirect()->intended('admin');
-            } elseif ($user->level == 'editor') {
-               return redirect()->intended('editor');
-            }
+            return redirect()->intended('admin');    
+        }   else if ($user->level == 'editor') {
+            return redirect()->intended('editor');
         }
         return view('login');
     }
 
-    public function proses_login(Request $Request)
+    public function proses_login(Request $request)
     {
-        Request()->validate(
-        [
-            'username' => 'require',
-            'password' => 'require',
-        ]);
+        request()->validate(
+            [
+                'username' => 'required',
+                'password' => 'required',
+            ]);
 
-        $kredensil = $Request->only('username','password');
+            $kredensil = $request->only('username','password');
 
-        if (Auth::attempt($kredensil)) {
-            $user = Auth::user();
-            if ($user->level == 'admin') {
-                return redirect()->intended('admin');
-            } elseif ($user->level == 'editor');
-               return redirect()->intended('editor');
+            if (Auth::attempt($kredensil)) {
+                $user = Auth::user();
+                if ($user->level == 'admin') {
+                    return redirect()->intended('admin');
+                } elseif ($user->level == 'editor') {
+                    return redirect()->intended('editor');
+                }
+                return redirect()->intended('/');
             }
-            return redirect()->intended('/');
-        }
 
-    return redirect('login')
-        ->withInput()
-        ->withErrors(['Login_gagal' => 'These credentials do not match out records']);    
-    }
+            return redirect('login')
+            ->withInput()
+            ->withErrors(['login_gagal' => 'These credentials do not match our records']);
+        }
 }
